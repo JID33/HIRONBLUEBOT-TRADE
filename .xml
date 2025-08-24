@@ -1,0 +1,82 @@
+<xml xmlns="https://developers.google.com/blockly/xml" is_dbot="true" collection="false">
+  <variables>
+    <variable id="var_takeprofit">Take Profit</variable>
+    <variable id="var_stoploss">Stop Loss</variable>
+    <variable id="var_stake">Stake</variable>
+    <variable id="var_fast_period">Fast Period</variable>
+    <variable id="var_slow_period">Slow Period</variable>
+    <variable id="var_fast_ma">Fast MA</variable>
+    <variable id="var_slow_ma">Slow MA</variable>
+  </variables>
+
+  <block type="trade_definition" id="trade_definition">
+    <statement name="TRADE_OPTIONS">
+      <block type="trade_definition_market" id="market">
+        <field name="MARKET_LIST">synthetic_index</field>
+        <field name="SUBMARKET_LIST">random_index</field>
+        <field name="SYMBOL_LIST">R_10</field>
+        <next>
+          <block type="trade_definition_tradetype" id="tradetype">
+            <field name="TRADETYPECAT_LIST">callput</field>
+            <field name="TRADETYPE_LIST">callput</field>
+            <next>
+              <block type="trade_definition_contracttype" id="contracttype">
+                <field name="TYPE_LIST">both</field> <next>
+                  <block type="trade_definition_candleinterval" id="candleinterval">
+                    <field name="CANDLEINTERVAL_LIST">60</field> </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+
+    <statement name="INITIALIZATION">
+      <block type="variables_set" id="init_stake">
+        <field name="VAR" id="var_stake">Stake</field>
+        <value name="VALUE">
+          <block type="math_number">
+            <field name="NUM">2</field> </block>
+        </value>
+        <next>
+          <block type="variables_set" id="init_fast_period">
+            <field name="VAR" id="var_fast_period">Fast Period</field>
+            <value name="VALUE">
+              <block type="math_number">
+                <field name="NUM">10</field> </block>
+            </value>
+            <next>
+              <block type="variables_set" id="init_slow_period">
+                <field name="VAR" id="var_slow_period">Slow Period</field>
+                <value name="VALUE">
+                  <block type="math_number">
+                    <field name="NUM">30</field> </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+
+    <statement name="PURCHASE_CONDITIONS">
+      <block type="controls_if" id="trade_logic">
+        <variables_set>
+           ...calcul de la moyenne mobile rapide (Fast MA) sur 'Fast Period'...
+        </variables_set>
+        <variables_set>
+           ...calcul de la moyenne mobile lente (Slow MA) sur 'Slow Period'...
+        </variables_set>
+        
+        <if condition="Fast MA crosses over Slow MA">
+            <purchase contract="CALL" />
+        </if>
+        
+        <if condition="Fast MA crosses under Slow MA">
+            <purchase contract="PUT" />
+        </if>
+      </block>
+    </statement>
+  </block>
+</xml>
