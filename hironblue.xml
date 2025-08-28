@@ -14,19 +14,19 @@
   </variables>
   <block type="trade_definition" id="trade_definition" x="10" y="10">
     <statement name="TRADE_OPTIONS">
-      <block type="trade_definition_market" id="market">
+      <block type="trade_definition_market">
         <field name="MARKET_LIST">synthetic_index</field>
         <field name="SUBMARKET_LIST">random_index</field>
         <field name="SYMBOL_LIST">R_10</field>
         <next>
-          <block type="trade_definition_tradetype" id="tradetype">
+          <block type="trade_definition_tradetype">
             <field name="TRADETYPECAT_LIST">callput</field>
             <field name="TRADETYPE_LIST">callput</field>
             <next>
-              <block type="trade_definition_contracttype" id="contracttype">
+              <block type="trade_definition_contracttype">
                 <field name="TYPE_LIST">both</field>
                 <next>
-                  <block type="trade_definition_candleinterval" id="candleinterval">
+                  <block type="trade_definition_candleinterval">
                     <field name="CANDLEINTERVAL_LIST">60</field>
                   </block>
                 </next>
@@ -37,7 +37,7 @@
       </block>
     </statement>
     <statement name="INITIALIZATION">
-      <block type="variables_set" id="init_capital">
+      <block type="variables_set">
         <field name="VAR" id="var_capital">Capital_total</field>
         <value name="VALUE">
           <block type="math_number">
@@ -45,7 +45,7 @@
           </block>
         </value>
         <next>
-          <block type="variables_set" id="init_stake">
+          <block type="variables_set">
             <field name="VAR" id="var_stake">Stake</field>
             <value name="VALUE">
               <block type="math_arithmetic">
@@ -63,7 +63,7 @@
               </block>
             </value>
             <next>
-              <block type="variables_set" id="init_fast_period">
+              <block type="variables_set">
                 <field name="VAR" id="var_fast_period">Fast Period</field>
                 <value name="VALUE">
                   <block type="math_number">
@@ -71,7 +71,7 @@
                   </block>
                 </value>
                 <next>
-                  <block type="variables_set" id="init_slow_period">
+                  <block type="variables_set">
                     <field name="VAR" id="var_slow_period">Slow Period</field>
                     <value name="VALUE">
                       <block type="math_number">
@@ -79,7 +79,7 @@
                       </block>
                     </value>
                     <next>
-                      <block type="variables_set" id="init_takeprofit">
+                      <block type="variables_set">
                         <field name="VAR" id="var_takeprofit">Take Profit</field>
                         <value name="VALUE">
                           <block type="math_arithmetic">
@@ -97,7 +97,7 @@
                           </block>
                         </value>
                         <next>
-                          <block type="variables_set" id="init_stoploss">
+                          <block type="variables_set">
                             <field name="VAR" id="var_stoploss">Stop Loss</field>
                             <value name="VALUE">
                               <block type="math_arithmetic">
@@ -115,7 +115,7 @@
                               </block>
                             </value>
                             <next>
-                              <block type="variables_set" id="init_pause">
+                              <block type="variables_set">
                                 <field name="VAR" id="var_pauseafterloss">PauseAprèsPerte</field>
                                 <value name="VALUE">
                                   <block type="math_number">
@@ -123,7 +123,7 @@
                                   </block>
                                 </value>
                                 <next>
-                                  <block type="variables_set" id="init_seuilvol">
+                                  <block type="variables_set">
                                     <field name="VAR" id="var_seuil_volatilite">Seuil_volatilité</field>
                                     <value name="VALUE">
                                       <block type="math_number">
@@ -147,46 +147,45 @@
       </block>
     </statement>
     <statement name="PURCHASE_CONDITIONS">
-      <block type="tick_analysis" id="tick_analysis">
+      <block type="tick_analysis">
         <statement name="TICKANALYSIS_STACK">
-          <block type="variables_set" id="set_fast_ma">
+          <block type="variables_set">
             <field name="VAR" id="var_fast_ma">Fast MA</field>
             <value name="VALUE">
-              <block type="sma_array" id="fast_sma_array">
+              <block type="sma_array">
                 <value name="INPUT">
-                  <block type="ohlc_values" id="ohlc_close">
+                  <block type="ohlc_values">
                     <field name="OHLCFIELD_LIST">close</field>
                     <field name="CANDLEINTERVAL_LIST">60</field>
                   </block>
                 </value>
                 <value name="PERIOD">
-                  <block type="variables_get" id="get_fast_period">
+                  <block type="variables_get">
                     <field name="VAR" id="var_fast_period">Fast Period</field>
                   </block>
                 </value>
               </block>
             </value>
             <next>
-              <block type="variables_set" id="set_slow_ma">
+              <block type="variables_set">
                 <field name="VAR" id="var_slow_ma">Slow MA</field>
                 <value name="VALUE">
-                  <block type="sma_array" id="slow_sma_array">
+                  <block type="sma_array">
                     <value name="INPUT">
-                      <block type="ohlc_values" id="ohlc_close2">
+                      <block type="ohlc_values">
                         <field name="OHLCFIELD_LIST">close</field>
                         <field name="CANDLEINTERVAL_LIST">60</field>
                       </block>
                     </value>
                     <value name="PERIOD">
-                      <block type="variables_get" id="get_slow_period">
+                      <block type="variables_get">
                         <field name="VAR" id="var_slow_period">Slow Period</field>
                       </block>
                     </value>
                   </block>
                 </value>
                 <next>
-                  <!-- PAUSE APRES PERTE -->
-                  <block type="controls_if" id="if_pause">
+                  <block type="controls_if">
                     <value name="IF0">
                       <block type="logic_compare">
                         <field name="OP">LTE</field>
@@ -203,8 +202,7 @@
                       </block>
                     </value>
                     <statement name="DO0">
-                      <!-- FILTRE DE VOLATILITE -->
-                      <block type="controls_if" id="if_volatility">
+                      <block type="controls_if">
                         <value name="IF0">
                           <block type="logic_compare">
                             <field name="OP">GT</field>
@@ -231,46 +229,45 @@
                           </block>
                         </value>
                         <statement name="DO0">
-                          <!-- CONDITIONS D'ACHAT -->
-                          <block type="controls_if" id="trade_conditions">
+                          <block type="controls_if">
                             <mutation else="1"></mutation>
                             <value name="IF0">
-                              <block type="logic_compare" id="fast_gt_slow">
+                              <block type="logic_compare">
                                 <field name="OP">GT</field>
                                 <value name="A">
-                                  <block type="variables_get" id="get_fast_ma">
+                                  <block type="variables_get">
                                     <field name="VAR" id="var_fast_ma">Fast MA</field>
                                   </block>
                                 </value>
                                 <value name="B">
-                                  <block type="variables_get" id="get_slow_ma">
+                                  <block type="variables_get">
                                     <field name="VAR" id="var_slow_ma">Slow MA</field>
                                   </block>
                                 </value>
                               </block>
                             </value>
                             <statement name="DO0">
-                              <block type="purchase" id="purchase_call">
+                              <block type="purchase">
                                 <field name="PURCHASE_LIST">CALL</field>
                               </block>
                             </statement>
                             <value name="IF1">
-                              <block type="logic_compare" id="fast_lt_slow">
+                              <block type="logic_compare">
                                 <field name="OP">LT</field>
                                 <value name="A">
-                                  <block type="variables_get" id="get_fast_ma2">
+                                  <block type="variables_get">
                                     <field name="VAR" id="var_fast_ma">Fast MA</field>
                                   </block>
                                 </value>
                                 <value name="B">
-                                  <block type="variables_get" id="get_slow_ma2">
+                                  <block type="variables_get">
                                     <field name="VAR" id="var_slow_ma">Slow MA</field>
                                   </block>
                                 </value>
                               </block>
                             </value>
                             <statement name="DO1">
-                              <block type="purchase" id="purchase_put">
+                              <block type="purchase">
                                 <field name="PURCHASE_LIST">PUT</field>
                               </block>
                             </statement>
@@ -279,7 +276,6 @@
                       </block>
                     </statement>
                     <statement name="ELSE">
-                      <!-- Si PAUSE, décrémente PauseAprèsPerte -->
                       <block type="variables_set">
                         <field name="VAR" id="var_pauseafterloss">PauseAprèsPerte</field>
                         <value name="VALUE">
@@ -308,39 +304,39 @@
       </block>
     </statement>
     <statement name="SELL_CONDITIONS">
-      <block type="controls_if" id="sell_conditions">
+      <block type="controls_if">
         <mutation else="1"></mutation>
         <value name="IF0">
-          <block type="logic_compare" id="profit_reached">
+          <block type="logic_compare">
             <field name="OP">GTE</field>
             <value name="A">
-              <block type="total_profit" id="get_total_profit"></block>
+              <block type="total_profit"></block>
             </value>
             <value name="B">
-              <block type="variables_get" id="get_takeprofit">
+              <block type="variables_get">
                 <field name="VAR" id="var_takeprofit">Take Profit</field>
               </block>
             </value>
           </block>
         </value>
         <statement name="DO0">
-          <block type="sell_at_market" id="sell_tp"></block>
+          <block type="sell_at_market"></block>
         </statement>
         <value name="IF1">
-          <block type="logic_compare" id="loss_reached">
+          <block type="logic_compare">
             <field name="OP">LTE</field>
             <value name="A">
-              <block type="total_profit" id="get_total_profit2"></block>
+              <block type="total_profit"></block>
             </value>
             <value name="B">
-              <block type="variables_get" id="get_stoploss">
+              <block type="variables_get">
                 <field name="VAR" id="var_stoploss">Stop Loss</field>
               </block>
             </value>
           </block>
         </value>
         <statement name="DO1">
-          <block type="sell_at_market" id="sell_sl"></block>
+          <block type="sell_at_market"></block>
           <next>
             <block type="variables_set">
               <field name="VAR" id="var_pauseafterloss">PauseAprèsPerte</field>
