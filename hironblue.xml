@@ -8,7 +8,6 @@
     <variable id="var_fast_ma">Fast MA</variable>
     <variable id="var_slow_ma">Slow MA</variable>
   </variables>
-
   <block type="trade_definition" id="trade_definition">
     <statement name="TRADE_OPTIONS">
       <block type="trade_definition_market" id="market">
@@ -21,9 +20,11 @@
             <field name="TRADETYPE_LIST">callput</field>
             <next>
               <block type="trade_definition_contracttype" id="contracttype">
-                <field name="TYPE_LIST">both</field> <next>
+                <field name="TYPE_LIST">both</field>
+                <next>
                   <block type="trade_definition_candleinterval" id="candleinterval">
-                    <field name="CANDLEINTERVAL_LIST">60</field> </block>
+                    <field name="CANDLEINTERVAL_LIST">60</field>
+                  </block>
                 </next>
               </block>
             </next>
@@ -31,27 +32,29 @@
         </next>
       </block>
     </statement>
-
     <statement name="INITIALIZATION">
       <block type="variables_set" id="init_stake">
         <field name="VAR" id="var_stake">Stake</field>
         <value name="VALUE">
           <block type="math_number">
-            <field name="NUM">2</field> </block>
+            <field name="NUM">2</field>
+          </block>
         </value>
         <next>
           <block type="variables_set" id="init_fast_period">
             <field name="VAR" id="var_fast_period">Fast Period</field>
             <value name="VALUE">
               <block type="math_number">
-                <field name="NUM">10</field> </block>
+                <field name="NUM">10</field>
+              </block>
             </value>
             <next>
               <block type="variables_set" id="init_slow_period">
                 <field name="VAR" id="var_slow_period">Slow Period</field>
                 <value name="VALUE">
                   <block type="math_number">
-                    <field name="NUM">30</field> </block>
+                    <field name="NUM">30</field>
+                  </block>
                 </value>
               </block>
             </next>
@@ -59,24 +62,104 @@
         </next>
       </block>
     </statement>
-
     <statement name="PURCHASE_CONDITIONS">
-      <block type="controls_if" id="trade_logic">
-        <variables_set>
-           ...calcul de la moyenne mobile rapide (Fast MA) sur 'Fast Period'...
-        </variables_set>
-        <variables_set>
-           ...calcul de la moyenne mobile lente (Slow MA) sur 'Slow Period'...
-        </variables_set>
-        
-        <if condition="Fast MA crosses over Slow MA">
-            <purchase contract="CALL" />
-        </if>
-        
-        <if condition="Fast MA crosses under Slow MA">
-            <purchase contract="PUT" />
-        </if>
+      <block type="tick_analysis" id="tick_analysis">
+        <statement name="TICKANALYSIS_STACK">
+          <block type="variables_set" id="set_fast_ma">
+            <field name="VAR" id="var_fast_ma">Fast MA</field>
+            <value name="VALUE">
+              <block type="sma_array" id="fast_sma_array">
+                <value name="INPUT">
+                  <block type="ohlc_values" id="ohlc_close">
+                    <field name="OHLCFIELD_LIST">close</field>
+                    <field name="CANDLEINTERVAL_LIST">60</field>
+                  </block>
+                </value>
+                <value name="PERIOD">
+                  <block type="variables_get" id="get_fast_period">
+                    <field name="VAR" id="var_fast_period">Fast Period</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="variables_set" id="set_slow_ma">
+                <field name="VAR" id="var_slow_ma">Slow MA</field>
+                <value name="VALUE">
+                  <block type="sma_array" id="slow_sma_array">
+                    <value name="INPUT">
+                      <block type="ohlc_values" id="ohlc_close2">
+                        <field name="OHLCFIELD_LIST">close</field>
+                        <field name="CANDLEINTERVAL_LIST">60</field>
+                      </block>
+                    </value>
+                    <value name="PERIOD">
+                      <block type="variables_get" id="get_slow_period">
+                        <field name="VAR" id="var_slow_period">Slow Period</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="controls_if" id="trade_conditions">
+                    <mutation else="1"></mutation>
+                    <value name="IF0">
+                      <block type="logic_operation" id="crossover_condition">
+                        <field name="OP">AND</field>
+                        <value name="A">
+                          <block type="logic_compare" id="fast_gt_slow">
+                            <field name="OP">GT</field>
+                            <value name="A">
+                              <block type="variables_get" id="get_fast_ma">
+                                <field name="VAR" id="var_fast_ma">Fast MA</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="variables_get" id="get_slow_ma">
+                                <field name="VAR" id="var_slow_ma">Slow MA</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO0">
+                      <block type="purchase" id="purchase_call">
+                        <field name="PURCHASE_LIST">CALL</field>
+                      </block>
+                    </statement>
+                    <value name="IF1">
+                      <block type="logic_operation" id="crossunder_condition">
+                        <field name="OP">AND</field>
+                        <value name="A">
+                          <block type="logic_compare" id="fast_lt_slow">
+                            <field name="OP">LT</field>
+                            <value name="A">
+                              <block type="variables_get" id="get_fast_ma2">
+                                <field name="VAR" id="var_fast_ma">Fast MA</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="variables_get" id="get_slow_ma2">
+                                <field name="VAR" id="var_slow_ma">Slow MA</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO1">
+                      <block type="purchase" id="purchase_put">
+                        <field name="PURCHASE_LIST">PUT</field>
+                      </block>
+                    </statement>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
       </block>
     </statement>
-  </block>
+    </block>
 </xml>
