@@ -1,4 +1,5 @@
-<xml xmlns="https://developers.google.com/blockly/xml" is_dbot="true" collection="false">
+<?xml version="1.0" encoding="UTF-8"?>
+<xml xmlns="https://developers.google.com/blockly/xml">
   <variables>
     <variable id="var_takeprofit">Take Profit</variable>
     <variable id="var_stoploss">Stop Loss</variable>
@@ -8,7 +9,7 @@
     <variable id="var_fast_ma">Fast MA</variable>
     <variable id="var_slow_ma">Slow MA</variable>
   </variables>
-  <block type="trade_definition" id="trade_definition">
+  <block type="trade_definition" id="trade_definition" x="10" y="10">
     <statement name="TRADE_OPTIONS">
       <block type="trade_definition_market" id="market">
         <field name="MARKET_LIST">synthetic_index</field>
@@ -56,6 +57,26 @@
                     <field name="NUM">30</field>
                   </block>
                 </value>
+                <next>
+                  <block type="variables_set" id="init_takeprofit">
+                    <field name="VAR" id="var_takeprofit">Take Profit</field>
+                    <value name="VALUE">
+                      <block type="math_number">
+                        <field name="NUM">10</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="variables_set" id="init_stoploss">
+                        <field name="VAR" id="var_stoploss">Stop Loss</field>
+                        <value name="VALUE">
+                          <block type="math_number">
+                            <field name="NUM">-10</field>
+                          </block>
+                        </value>
+                      </block>
+                    </next>
+                  </block>
+                </next>
               </block>
             </next>
           </block>
@@ -104,21 +125,16 @@
                   <block type="controls_if" id="trade_conditions">
                     <mutation else="1"></mutation>
                     <value name="IF0">
-                      <block type="logic_operation" id="crossover_condition">
-                        <field name="OP">AND</field>
+                      <block type="logic_compare" id="fast_gt_slow">
+                        <field name="OP">GT</field>
                         <value name="A">
-                          <block type="logic_compare" id="fast_gt_slow">
-                            <field name="OP">GT</field>
-                            <value name="A">
-                              <block type="variables_get" id="get_fast_ma">
-                                <field name="VAR" id="var_fast_ma">Fast MA</field>
-                              </block>
-                            </value>
-                            <value name="B">
-                              <block type="variables_get" id="get_slow_ma">
-                                <field name="VAR" id="var_slow_ma">Slow MA</field>
-                              </block>
-                            </value>
+                          <block type="variables_get" id="get_fast_ma">
+                            <field name="VAR" id="var_fast_ma">Fast MA</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="variables_get" id="get_slow_ma">
+                            <field name="VAR" id="var_slow_ma">Slow MA</field>
                           </block>
                         </value>
                       </block>
@@ -129,21 +145,16 @@
                       </block>
                     </statement>
                     <value name="IF1">
-                      <block type="logic_operation" id="crossunder_condition">
-                        <field name="OP">AND</field>
+                      <block type="logic_compare" id="fast_lt_slow">
+                        <field name="OP">LT</field>
                         <value name="A">
-                          <block type="logic_compare" id="fast_lt_slow">
-                            <field name="OP">LT</field>
-                            <value name="A">
-                              <block type="variables_get" id="get_fast_ma2">
-                                <field name="VAR" id="var_fast_ma">Fast MA</field>
-                              </block>
-                            </value>
-                            <value name="B">
-                              <block type="variables_get" id="get_slow_ma2">
-                                <field name="VAR" id="var_slow_ma">Slow MA</field>
-                              </block>
-                            </value>
+                          <block type="variables_get" id="get_fast_ma2">
+                            <field name="VAR" id="var_fast_ma">Fast MA</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="variables_get" id="get_slow_ma2">
+                            <field name="VAR" id="var_slow_ma">Slow MA</field>
                           </block>
                         </value>
                       </block>
@@ -161,5 +172,44 @@
         </statement>
       </block>
     </statement>
-    </block>
+    <statement name="SELL_CONDITIONS">
+      <block type="controls_if" id="sell_conditions">
+        <mutation else="1"></mutation>
+        <value name="IF0">
+          <block type="logic_compare" id="profit_reached">
+            <field name="OP">GTE</field>
+            <value name="A">
+              <block type="total_profit" id="get_total_profit"></block>
+            </value>
+            <value name="B">
+              <block type="variables_get" id="get_takeprofit">
+                <field name="VAR" id="var_takeprofit">Take Profit</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="sell_at_market" id="sell_tp"></block>
+        </statement>
+        <value name="IF1">
+          <block type="logic_compare" id="loss_reached">
+            <field name="OP">LTE</field>
+            <value name="A">
+              <block type="total_profit" id="get_total_profit2"></block>
+            </value>
+            <value name="B">
+              <block type="variables_get" id="get_stoploss">
+                <field name="VAR" id="var_stoploss">Stop Loss</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO1">
+          <block type="sell_at_market" id="sell_sl"></block>
+        </statement>
+      </block>
+    </statement>
+    <statement name="RESTART_BUY_CONDITIONS"/>
+    <statement name="RESTART_LAST_TRADE_CONDITIONS"/>
+  </block>
 </xml>
